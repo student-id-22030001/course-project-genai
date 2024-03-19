@@ -5,7 +5,7 @@ import google.generativeai as genai
 from moviepy.editor import VideoFileClip
 
 # Title of the application
-st.title("Video Based Q&A")
+st.title("Video & Audio Based Q&A")
 
 # Initialize chat history and video processed flag
 if "messages" not in st.session_state:
