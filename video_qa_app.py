@@ -20,48 +20,60 @@ uploaded_file = st.file_uploader("Upload a video or audio file", type=["avi", "m
 if st.button("Process File"):
     if uploaded_file is not None:
         
-        # Check extension to determine type of file
-        file_extension = os.path.splitext(uploaded_file.name)[1].lower()
-        if file_extension in [".avi", ".mkv", ".mov", ".mp4"]:
+        # Display status message indicating processing has started
+        with st.status("Processing file...", expanded=True) as status:
             
-            # Process video file
-            video_bytes = uploaded_file.read()
-            video_file_path = 'temp_video.mkv'
+            # Check extension to determine type of file
+            file_extension = os.path.splitext(uploaded_file.name)[1].lower()
+            if file_extension in [".avi", ".mkv", ".mov", ".mp4"]:
+                
+                # Process video file
+                video_bytes = uploaded_file.read()
+                video_file_path = 'temp_video.mkv'
+                
+                with open(video_file_path, 'wb') as f:
+                    f.write(video_bytes)
+                audio_file_path = 'audio_file.mp3'
+                
+                # Update status
+                st.write("Converting video to audio")
+                
+                # Extract audio from video
+                video = VideoFileClip(video_file_path)
+                video.audio.write_audiofile(audio_file_path)
             
-            with open(video_file_path, 'wb') as f:
-                f.write(video_bytes)
-            audio_file_path = 'audio_file.mp3'
+            elif file_extension in [".mp3", ".wav"]:
+                # Process audio file directly
+                audio_bytes = uploaded_file.read()
+                audio_file_path = 'audio_file' + file_extension
+                
+                with open(audio_file_path, 'wb') as f:
+                    f.write(audio_bytes)
             
-            # Extract audio from video
-            video = VideoFileClip(video_file_path)
-            video.audio.write_audiofile(audio_file_path)
-        
-        elif file_extension in [".mp3", ".wav"]:
-            # Process audio file directly
-            audio_bytes = uploaded_file.read()
-            audio_file_path = 'audio_file' + file_extension
+            else:
+                st.session_state.messages.append({"role": "assistant", "content": "Unsupported file format. Please upload a supported video or audio file."})
+                st.stop()
             
-            with open(audio_file_path, 'wb') as f:
-                f.write(audio_bytes)
-        
-        else:
-            st.session_state.messages.append({"role": "assistant", "content": "Unsupported file format. Please upload a supported video or audio file."})
-            st.stop()
-        
-        # Transcribe audio with Whisper
-        whisper_model = whisper.load_model("base")
-        result = whisper_model.transcribe(audio_file_path)
-        text = result["text"]
-        
-        # Save the transcribed text to a file
-        with open("transcribed_text.txt", "w", encoding="utf-8") as f:
-            f.write(text)
-        
-        # Add transcribed text to chat history
-        st.session_state.messages.append({"role": "assistant", "content": f"Transcribed Text: {text}"})
-        
-        # Set the file processed flag to True
-        st.session_state.file_processed = True
+            # Update status
+            st.write("Transcribing audio")
+            
+            # Transcribe audio with Whisper
+            whisper_model = whisper.load_model("base")
+            result = whisper_model.transcribe(audio_file_path)
+            text = result["text"]
+            
+            # Save the transcribed text to a file
+            with open("transcribed_text.txt", "w", encoding="utf-8") as f:
+                f.write(text)
+            
+            # Add transcribed text to chat history
+            st.session_state.messages.append({"role": "assistant", "content": f"Transcribed Text: {text}"})
+            
+            # Update status
+            status.update(label="Processing complete!", state="complete", expanded=False)
+            
+            # Set the file processed flag to True
+            st.session_state.file_processed = True
     else:
         st.session_state.messages.append({"role": "assistant", "content": "Please upload a file."})
 
