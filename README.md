@@ -1,6 +1,6 @@
 # Video & Audio QA System
 
-This repository contains the code for a Video/Audio QA (Question Answering) System built with Streamlit. The system is designed to provide an interactive interface for users to ask questions about videos and receive answers.
+This repository contains the code for a Video and Audio QA (Question Answering) System built with Streamlit. The system is designed to provide an interactive interface for users to ask questions about videos and receive answers.
 
 ## Directory Structure
 
@@ -21,8 +21,8 @@ To get started with the project, follow these steps:
 4. Create a `.streamlit` directory in the project root if it doesn't already exist.
 5. Inside the `.streamlit` directory, create a `secrets.toml` file.
 6. Obtain your Gemini API key by following the instructions provided by Gemini. If you haven't already, you'll need to sign up for an account and generate an API key.
-7. Add your Gemini API key to the `secrets.toml` file in the following format: GEMINI_API_KEY = "add_your_key_here"
-8. Navigate back to the project root directory 'cd..'
+7. Add your Gemini API key to the `secrets.toml` file in the following format: GEMINI_API_KEY = "add_key_here"
+8. Navigate back to the project root directory `cd..`
 9. Run the Streamlit app: `streamlit run video_qa_app.py`
 
 ## Deployment
@@ -35,4 +35,4 @@ This project is licensed under the LUMS License. See the `LICENSE` file for deta
 
 ## Acknowledgments
 
-- Streamlit for providing an easy-to-use framework for building web applications.
+Streamlit for providing an easy-to-use framework for building web applications.
