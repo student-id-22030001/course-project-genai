@@ -6,9 +6,90 @@ from google.oauth2 import service_account
 from vertexai.generative_models import GenerativeModel
 from moviepy.editor import VideoFileClip, AudioFileClip
 from pytube import YouTube
+from fpdf import FPDF
 
+def genReport():
+    # Ensure there is transcribed text available
+    try:
+        with open("transcribed_text.txt", "r", encoding="utf-8") as f:
+            transcribed_text = f.read()
+    except FileNotFoundError:
+        st.error("No transcribed text available. Please upload and process a file first.")
+        return
+    
+    credentials = service_account.Credentials.from_service_account_info({
+            "type": st.secrets["type"],
+            "project_id": st.secrets["project_id"],
+            "private_key_id": st.secrets["private_key_id"],
+            "private_key": st.secrets["private_key"],
+            "client_email": st.secrets["client_email"],
+            "client_id": st.secrets["client_id"],
+            "auth_uri": st.secrets["auth_uri"],
+            "token_uri": st.secrets["token_uri"],
+            "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
+            "client_x509_cert_url": st.secrets["client_x509_cert_url"],
+            "universe_domain": st.secrets["universe_domain"]
+        })
+    vertexai.init(project="997948407242", location="us-central1", credentials=credentials)
+    gemini_model = GenerativeModel("projects/997948407242/locations/us-central1/endpoints/2036231762966740992")
+    # Generate summary using the model
+    # prompt = "Write a summary for the following text:"
+    # response = gemini_model.generate_content(f"{transcribed_text}\n{prompt}")
+
+    # # Prepare PDF
+    # pdf = FPDF()
+    # pdf.add_page()
+    # pdf.set_font("Arial", size = 12)
+
+    # # Adding response as multi_cell
+    # pdf.multi_cell(0, 10, response.text)
+
+    # # Save PDF
+    # pdf_file_path = "Comprehensive_Report.pdf"
+    # pdf.output(pdf_file_path)
+    # st.success(f"Report generated and saved as {pdf_file_path}")
+        # Prepare model prompts
+    summary_prompt = "Write a summary for the following text:"
+    points_prompt = "List the 10 most important points from the following text:"
+    qa_prompt = "Generate 10 questions and their answers based on the following text:"
+
+    # Generate responses using the model
+    summary_response = gemini_model.generate_content(f"{transcribed_text}\n{summary_prompt}")
+    points_response = gemini_model.generate_content(f"{transcribed_text}\n{points_prompt}")
+    qa_response = gemini_model.generate_content(f"{transcribed_text}\n{qa_prompt}")
+
+    # Prepare PDF
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size = 12)
+    
+    # Adding Summary
+    pdf.cell(0, 10, 'Summary:', 0, 1)
+    pdf.multi_cell(0, 10, summary_response.text)
+    pdf.ln(10)  # Add a line break
+
+    # Adding Important Points
+    pdf.cell(0, 10, 'Important Points:', 0, 1)
+    pdf.multi_cell(0, 10, points_response.text)
+    pdf.ln(10)  # Add a line break
+
+    # Adding Q&A
+    pdf.cell(0, 10, 'Questions and Answers:', 0, 1)
+    pdf.multi_cell(0, 10, qa_response.text)
+
+    # Save PDF
+    pdf_file_path = "Comprehensive_Report.pdf"
+    pdf.output(pdf_file_path)
+    st.success(f"Report generated and saved as {pdf_file_path}")
 # Title of the application
 st.title("Video & Audio Based Chatbot")
+
+# Layout for top-right button
+col1, col2 = st.columns([3, 1])
+with col2:
+    if st.button("Generate Comprehensive Report"):
+        genReport()
+
 
 # Initialize chat history and file processed flag
 if "messages" not in st.session_state:
