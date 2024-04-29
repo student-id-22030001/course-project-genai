@@ -5,3 +5,4 @@ google-generativeai
 pytube
 google-auth
 google-cloud-aiplatform
+fpdf
