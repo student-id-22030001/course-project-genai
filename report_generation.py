@@ -45,3 +45,14 @@ def generate_pdf():
         pdf.output(pdf_file_path, 'F')
     except UnicodeEncodeError as e:
         st.error("An encoding error occurred.")
+
+    with open("Comprehensive_Report.pdf", "rb") as pdf_file:
+        PDFbyte = pdf_file.read()
+
+    # Streamlit download button
+    st.download_button(
+        label="Download Report",
+        data=PDFbyte,
+        file_name="Comprehensive_Report.pdf",
+        mime="application/octet-stream"
+    )
