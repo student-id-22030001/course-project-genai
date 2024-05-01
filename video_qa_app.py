@@ -41,7 +41,6 @@ if prompt := st.chat_input("Enter question:"):
         prompt_with_context = set_context(prompt)
         gemini_model = get_model()
         response = gemini_model.generate_content(prompt_with_context)
-        print(prompt_with_context)
         try:
             response_text = response.text
         except AttributeError:
