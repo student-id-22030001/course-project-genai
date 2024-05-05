@@ -27,11 +27,11 @@ To get started with the project, follow these steps:
 
 ## Deployment
 
-The application is designed to be deployed on Streamlit Cloud.
+The application is deployed on Streamlit Cloud. It can be viewed at https://course-project-genai-g12.streamlit.app/
 
 ## License
 
-This project is licensed under the LUMS License. See the `LICENSE` file for details.
+This project is licensed under the LUMS License.
 
 ## Acknowledgments
 
